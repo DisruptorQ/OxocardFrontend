@@ -1,0 +1,110 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json",
+          "e2e/tsconfig.json"
+        ],
+        "createDefaultProgram": true,
+        "emitDecoratorMetadata": true
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:import/recommended"
+      ],
+      "settings": {
+        "import/resolver": {
+          "typescript": {}
+        }
+      },
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/consistent-type-imports": "warn",
+        "import/order": [
+          "error",
+          {
+            "groups": [
+              "builtin",
+              "external",
+              "internal",
+              "parent",
+              "sibling",
+              "index",
+              "object",
+              "type"
+            ],
+            "warnOnUnassignedImports": true,
+            "newlines-between": "always"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/all",
+        "plugin:tailwindcss/recommended"
+      ],
+      "plugins": [
+        "tailwindcss"
+      ],
+      "rules": {
+        "@angular-eslint/template/i18n": "off",
+        "@angular-eslint/template/cyclomatic-complexity": [
+          "error",
+          {
+            "maxComplexity": 10
+          }
+        ],
+        "@angular-eslint/template/no-call-expression": [
+          "warn",
+          {
+            "allowList": [
+              "t"
+            ]
+          }
+        ],
+        "@angular-eslint/template/click-events-have-key-events": "off",
+        "tailwindcss/no-custom-classname": [
+          "warn",
+          {
+            "whitelist": [
+              "mat\\-.*",
+              "o\\-.*"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

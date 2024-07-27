@@ -1,0 +1,8 @@
+<div>
+  <h1 class="text-5xl">
+    Aktuelle Temperatur
+  </h1>
+  <h3 class="mt-6 text-3xl">
+    {{ (currentTemp$ | async)?.value }}
+  </h3>
+</div>
