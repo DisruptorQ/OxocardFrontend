@@ -1,55 +1,62 @@
 <h3 class="text-5xl font-semibold leading-6 text-hftm-red">Aktuelle Daten</h3>
+<hr class="my-6" />
 @if (loading) {
-<div class="mt-12 flex items-center gap-x-8">
-  <mat-spinner />
-  <div class="text-2xl">
-    Daten werden geladen...
+  <div class="mt-12 flex items-center gap-x-8">
+    <p-progressSpinner ariaLabel="loading" />
+    <div class="text-2xl">
+      Daten werden geladen...
+    </div>
   </div>
-</div>
 } @else {
-<dl class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
-  <app-sensor-value-card name="Temperatur (Celsius)">
-    {{ temperature$ | async | number: '1.0-0' }}°
-  </app-sensor-value-card>
-  <app-sensor-value-card name="Druck (mbar)">
-    {{ pressure$ | async | number: '1.1-1' }}
-  </app-sensor-value-card>
-  <app-sensor-value-card name="Feuchtigkeit (Relativ)">
-    {{ humidity$ | async | number: '1.0-0' }}%
-  </app-sensor-value-card>
-  <app-sensor-value-card name="Luftqualität (1 = Sehr gut, 5 = Sehr schlecht)">
-    @if (airQuality$ | async; as airQuality) {
-    <dd class="mt-1 flex items-center gap-x-4 text-3xl font-bold tracking-tight text-gray-900">
-      @if(airQuality === -1) {
-      <span>Unbekannt</span>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-        class="size-8">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-      </svg>
+  <div class="mt-6 flex items-center gap-x-4">
+    <h4 class="text-2xl">Letze Messung:</h4>
+    <span class="text-xl text-gray-500">{{ (measureTimestamp$ | async) }}</span>
+  </div>
+  <dl class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3">
+    <app-sensor-value-card name="Temperatur (Celsius)">
+      {{ temperature$ | async | number: '1.0-0' }}°
+    </app-sensor-value-card>
+    <app-sensor-value-card name="Druck (mbar)">
+      {{ pressure$ | async | number: '1.1-1' }}
+    </app-sensor-value-card>
+    <app-sensor-value-card name="Feuchtigkeit (Relativ)">
+      {{ humidity$ | async | number: '1.0-0' }}%
+    </app-sensor-value-card>
+    <app-sensor-value-card name="Luftqualität (1 = Sehr gut, 5 = Sehr schlecht)">
+      @if (airQuality$ | async; as airQuality) {
+        <dd class="mt-1 flex items-center gap-x-4 text-3xl font-bold tracking-tight text-gray-900">
+          @if(airQuality === -1) {
+            <span>Unbekannt</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+            </svg>
 
-      } @else {
-      {{ airQuality | number: '1.2-2' }}
-      @if (airQuality <= 3) { <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-        stroke="currentColor" class="size-8 text-green-500">
-        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-        </svg>
-        } @else if (airQuality >= 3 && airQuality <= 4) { <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 text-yellow-500">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-          </svg>
           } @else {
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="size-8 text-red-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-          </svg>
+            {{ airQuality | number: '1.2-2' }}
+            @if (airQuality <= 3) {
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-8 text-green-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+              </svg>
+            } @else if (airQuality >= 3 && airQuality <= 4) {
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-8 text-yellow-500">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-8 text-red-500">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            }
           }
-          }
-    </dd>
-    }
-  </app-sensor-value-card>
-</dl>
+        </dd>
+      }
+    </app-sensor-value-card>
+  </dl>
 }
 
 <hr class="mt-8" />
@@ -66,26 +73,13 @@
   </div>
   <div class="mt-6 w-full">
     <div class="text-xl">
-      Intervall:
+      Lade-Intervall:
     </div>
-    <mat-form-field class="mt-4">
-      <mat-select [formControl]="intervalFormControl">
-        @for (item of refreshIntervalOptions; track $index) {
-        <mat-option [value]="item">{{ item }} Sekunden</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <div class="mt-4">
+      <p-dropdown optionLabel="optionlabel" placeholder="Intervall auswählen" optionValue="optionValue"
+        [options]="refreshIntervalOptions" [formControl]="intervalFormControl" />
+    </div>
   </div>
 </div>
 
-<ng-template #intervalSnackbarTemplate>
-  <div class="text-base text-white">
-    Intervall aktualisiert...
-  </div>
-</ng-template>
-
-<ng-template #requestErrorTemplate>
-  <div class="text-base text-red-500">
-    Fehler beim laden der Daten!
-  </div>
-</ng-template>
+<p-toast />

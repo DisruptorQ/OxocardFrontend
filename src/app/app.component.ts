@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { PrimeNGConfig } from 'primeng/api';
 
 import { SidebarComponent } from './pages/sidebar/sidebar.component';
 
+import type { OnInit } from '@angular/core';
 import type { NavItemModel } from './common/nav-item.model';
 
 export const opacityAnimation = trigger('opacityAnimation', [
@@ -27,13 +29,13 @@ export const opacityEaseInOutAnimation = trigger('opacityEaseInOutAnimation', [
 ]);
 
 export const slideAnimation = trigger('slideAnimation', [
-  transition(':enter', [   // Alias for void => *
-    style({ transform: 'translateX(-100%)' }), // Starting style, off-screen to the left
-    animate('300ms ease-in-out', style({ transform: 'translateX(0)' })) // Ending at center
+  transition(':enter', [
+    style({ transform: 'translateX(-100%)' }),
+    animate('300ms ease-in-out', style({ transform: 'translateX(0)' }))
   ]),
-  transition(':leave', [   // Alias for * => void
-    style({ transform: 'translateX(0)' }), // Starting from center
-    animate('300ms ease-in-out', style({ transform: 'translateX(-100%)' })) // Exiting to the left
+  transition(':leave', [
+    style({ transform: 'translateX(0)' }),
+    animate('300ms ease-in-out', style({ transform: 'translateX(-100%)' }))
   ])
 ]);
 
@@ -45,16 +47,20 @@ export const slideAnimation = trigger('slideAnimation', [
   imports: [RouterOutlet, SidebarComponent],
   animations: [opacityAnimation, opacityEaseInOutAnimation, slideAnimation]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+  private primeNgConfig = inject(PrimeNGConfig);
 
   sidebarOpen = false;
 
   navItems: Array<NavItemModel> = [];
 
-  toggleSidebarOpen() {
-    console.log('Toggling sidebar...');
-    this.sidebarOpen = !this.sidebarOpen;
+  ngOnInit(): void {
+    this.primeNgConfig.inputStyle.set('outlined');
+    this.primeNgConfig.ripple = true;
+  }
 
-    console.log('SidebarOpen is: ', this.sidebarOpen);
+  toggleSidebarOpen() {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 }

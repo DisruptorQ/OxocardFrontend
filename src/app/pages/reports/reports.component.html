@@ -1,4 +1,26 @@
-<ngx-charts-line-chart [view]="$any(view)" [scheme]="$any(colorScheme)" [legend]="legend"
-  [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxis]="xAxis" [yAxis]="yAxis"
-  [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [timeline]="timeline" [results]="multi"
-  (select)="onSelect($event)" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" />
+<h3 class="text-5xl font-semibold leading-6 text-hftm-red">Reports</h3>
+<hr class="my-6" />
+
+<div>
+  <div class="mb-4 text-xl text-hftm-dark-gray">
+    Datum wählen:
+  </div>
+  <p-calendar [formControl]="dateFormControl" [maxDate]="dateToday" />
+</div>
+
+<div class="mt-4">
+  @if (!isOxocardData) {
+    <div class="flex gap-x-2 text-orange-500">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+      </svg>
+      <span>Keine Daten der Oxocard verfügbar. Daten des Standort Grenchen wurden geladen!</span>
+    </div>
+  }
+</div>
+<div class="mt-12 w-full">
+
+  <div class="w-full"><canvas id="multiAxisChart"></canvas></div>
+</div>

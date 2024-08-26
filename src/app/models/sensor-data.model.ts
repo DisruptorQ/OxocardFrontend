@@ -1,6 +1,6 @@
 export interface SensorDataModel {
   id: number;
-  sensorName: string
-  timeStamp: Date
-  value: string
+  sensorName: string;
+  timeStamp: string;
+  value: string;
 }

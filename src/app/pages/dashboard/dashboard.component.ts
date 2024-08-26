@@ -1,16 +1,16 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { BehaviorSubject, delay, interval, map, throwError, catchError } from 'rxjs';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { DateTime } from 'luxon';
+import { DropdownModule } from 'primeng/dropdown';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 import { ApiService } from '../../services/api.service';
 import { SENSOR_NAME_AIRQUALITY, SENSOR_NAME_HUMIDITY, SENSOR_NAME_PRESSURE, SENSOR_NAME_TEMPERATURE } from '../../common/sensor.model';
 import { SensorValueCardComponent } from '../../components/molecules/sensor-value-card/sensor-value-card.component';
-import { SNACKBAR_OPTIONS } from '../../common/snackbar';
 
 import type { Observable, Unsubscribable } from 'rxjs';
 import type { OnDestroy, OnInit, TemplateRef } from '@angular/core';
@@ -22,12 +22,14 @@ import type { SensorDataModel } from '../../models/sensor-data.model';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
-  imports: [AsyncPipe, DecimalPipe, SensorValueCardComponent, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule, FormsModule, ReactiveFormsModule],
+  providers: [MessageService],
+  imports: [FormsModule, ReactiveFormsModule, DropdownModule, ProgressSpinnerModule,
+    ToastModule, AsyncPipe, DecimalPipe, SensorValueCardComponent],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
   private apiService = inject(ApiService);
-  private snackBar = inject(MatSnackBar);
+  private messageService = inject(MessageService);
 
   private _latestData$ = new BehaviorSubject<Array<SensorDataModel>>([]);
   private latestData$ = this._latestData$.asObservable();
@@ -43,17 +45,40 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('requestErrorTemplate')
   requestErrorTemplate?: TemplateRef<unknown>;
 
+  @ViewChild('dataRefreshedTemplate')
+  dataRefreshedTemplate?: TemplateRef<unknown>;
+
   loading = true;
 
-  refreshIntervalOptions = [
-    5,
-    10,
-    20,
-    30,
-    60
+  refreshIntervalOptions: Array<unknown> = [
+    {
+      optionlabel: '5 Sekunden',
+      optionValue: 5
+    },
+    {
+      optionlabel: '10 Sekunden',
+      optionValue: 10
+    },
+    {
+      optionlabel: '20 Sekunden',
+      optionValue: 20
+    },
+    {
+      optionlabel: '30 Sekunden',
+      optionValue: 30
+    }, {
+      optionlabel: '60 Sekunden',
+      optionValue: 60
+    }
   ];
 
   intervalFormControl = new FormControl<number>(30);
+
+  measureTimestamp$ = this.latestData$.pipe(
+    map(data => {
+      return DateTime.fromISO(data[0].timeStamp).setLocale('de').toFormat('dd LLL yyyy HH:mm');
+    })
+  );
 
   temperature$ = this.latestData$.pipe(
     map(data => {
@@ -96,7 +121,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
 
       this.startRefreshInterval(value);
-    })
+    });
+
+    this.startRefreshInterval(this.intervalFormControl.value ?? 30);
   }
 
   ngOnDestroy(): void {
@@ -111,15 +138,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.loadData();
     });
 
-    if (!this.intervalSnackbarTemplate) {
-      return;
-    }
-
-    this.snackBar.openFromTemplate(this.intervalSnackbarTemplate, SNACKBAR_OPTIONS);
+    this.messageService.clear();
+    this.messageService.add({ severity: 'success', summary: 'Erfolg', detail: 'Intervall aktualisiert.' });
   }
 
   private loadData() {
-    this.loading = true;
     this.apiService.getLatestDataForAllSensors().pipe(
       delay(1000),
       catchError(err => {
@@ -129,6 +152,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ).subscribe(data => {
       this._latestData$.next(data);
       this.loading = false;
+
+      this.messageService.clear();
+      this.messageService.add({ severity: 'success', summary: 'Erfolg', detail: 'Daten aktualisiert.' });
     });
   }
 
@@ -137,6 +163,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.snackBar.openFromTemplate(this.requestErrorTemplate, SNACKBAR_OPTIONS);
+    this.messageService.clear();
+    this.messageService.add({ severity: 'error', summary: 'Fehler', detail: 'Fehler beim laden der Daten!' });
   }
 }
